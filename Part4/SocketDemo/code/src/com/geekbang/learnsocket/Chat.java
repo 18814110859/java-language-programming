@@ -9,22 +9,25 @@ import static com.geekbang.learnsocket.SimpleServer.SERVER_CHARSET;
 
 public class Chat {
 
-    private String from;
-    private String greetings;
+    private final String from;
+    private final String greetings;
     private Socket socket;
 
-    public Chat (String from, String greetings, Socket socket) {
+    public Chat(String from, String greetings, Socket socket) {
         this.from = from;
         this.greetings = greetings;
         this.socket = socket;
     }
 
-    public void Chatting() throws IOException {
+    public void Chatting() {
+
         Scanner in = new Scanner(System.in);
+
         try (
-            BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream(), SERVER_CHARSET));
-            PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), SERVER_CHARSET))
+                BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream(), SERVER_CHARSET));
+                PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), SERVER_CHARSET));
         ) {
+
             System.out.println("Socket连接成功！建立输入输出");
             if (greetings != null) {
                 pw.println("你好，" + from + "。" + greetings);
@@ -38,13 +41,14 @@ public class Chat {
                     pw.println(BYE);
                     pw.flush();
                     break;
+                } else {
+                    System.out.println("消息：" + line + " 来自于 " + socket.getRemoteSocketAddress());
                 }
-                pw.println("来自\"" + from + "\"的消息：" + line);
-                line = in.nextLine();
-                pw.println(line);
+                String newLine = in.nextLine();
+                pw.println(newLine);
                 pw.flush();
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
